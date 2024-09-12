@@ -1,6 +1,6 @@
 "use client"
 import type React from 'react'
-import { useCallback, useEffect, useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 interface StockData {
   c: number;
@@ -37,7 +37,6 @@ const Welcome: React.FC = () => {
     }
   }, [symbol])
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     let intervalId: NodeJS.Timeout | null = null
 
@@ -51,7 +50,7 @@ const Welcome: React.FC = () => {
         clearInterval(intervalId)
       }
     }
-  }, [isPolling])
+  }, [isPolling, fetchStockPrice])
 
   const handleGetPrice = () => {
     setIsPolling(true)
@@ -88,20 +87,16 @@ const Welcome: React.FC = () => {
         </button>
       </div>
       {error && <p className="text-red-500 mb-4">{error}</p>}
-      
+      {stockData && (
         <div className="bg-gray-100 p-4 rounded-md text-black">
-            {stockData && (
-                <>
-                    <h2 className="text-2xl font-bold mb-2 text-black">{symbol}</h2>
-                    <p className="text-xl">Current Price: <span className="text-green-500">${stockData.c.toFixed(2)}</span></p>
-                    <p>Open: <span className="text-green-500">${stockData.o.toFixed(2)}</span></p>
-                    <p>High: <span className="text-green-500">${stockData.h.toFixed(2)}</span></p>
-                    <p>Low: <span className="text-green-500">${stockData.l.toFixed(2)}</span></p>
-                    <p>Previous Close: <span className="text-green-500">${stockData.pc.toFixed(2)}</span></p>
-                </>
-            )}
+          <h2 className="text-2xl font-bold mb-2 text-black">{symbol}</h2>
+          <p className="text-xl">Current Price: <span className="text-green-500">${stockData.c.toFixed(2)}</span></p>
+          <p>Open: <span className="text-green-500">${stockData.o.toFixed(2)}</span></p>
+          <p>High: <span className="text-green-500">${stockData.h.toFixed(2)}</span></p>
+          <p>Low: <span className="text-green-500">${stockData.l.toFixed(2)}</span></p>
+          <p>Previous Close: <span className="text-green-500">${stockData.pc.toFixed(2)}</span></p>
         </div>
-      
+      )}
     </div>
   )
 }
