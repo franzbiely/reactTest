@@ -30,6 +30,8 @@ This is a Next.js application that allows users to check real-time stock prices 
 ## Screenshots
 
 ![Stock Price Checker Screenshot](./public/image1.png)
+
+Failed to fetch stock data
 ![Stock Price Checker Screenshot](./public/image2.png)
 
 ## Technologies Used
