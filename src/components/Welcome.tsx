@@ -1,6 +1,6 @@
 "use client"
 import type React from 'react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 interface StockData {
   c: number;
@@ -17,10 +17,9 @@ const Welcome: React.FC = () => {
   const [error, setError] = useState('')
   const [isPolling, setIsPolling] = useState(false)
 
-  const fetchStockPrice = async () => {
-    
-    const currentTime = new Date().toLocaleTimeString()
-    console.log(`Fetching stock price at ${currentTime}`)
+  const fetchStockPrice = useCallback(async () => {
+    if (!symbol) return
+
     try {
       const response = await fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=crhc1f9r01qrbc71v4cgcrhc1f9r01qrbc71v4d0`)
       if (!response.ok) {
@@ -30,11 +29,13 @@ const Welcome: React.FC = () => {
       if (data.c === 0) {
         throw new Error('Invalid stock symbol')
       }
-      setStockData({ ...data, fetchTime: currentTime })
+      setStockData(data)
+      setError('')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
+      setStockData(null)
     }
-  }
+  }, [symbol])
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
