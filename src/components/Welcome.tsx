@@ -16,6 +16,7 @@ const Welcome: React.FC = () => {
   const [stockData, setStockData] = useState<StockData | null>(null)
   const [error, setError] = useState('')
   const [isPolling, setIsPolling] = useState(false)
+  const [priceUpdatedAt, setPriceUpdatedAt] = useState('')
 
   const fetchStockPrice = useCallback(async () => {
     if (!symbol) return
@@ -31,6 +32,7 @@ const Welcome: React.FC = () => {
       }
       setStockData(data)
       setError('')
+      setPriceUpdatedAt(new Date().toLocaleString())
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
       setStockData(null)
@@ -95,6 +97,9 @@ const Welcome: React.FC = () => {
           <p>High: <span className="text-green-500">${stockData.h.toFixed(2)}</span></p>
           <p>Low: <span className="text-green-500">${stockData.l.toFixed(2)}</span></p>
           <p>Previous Close: <span className="text-green-500">${stockData.pc.toFixed(2)}</span></p>
+          <br />
+          <hr />
+          <small className="mt-2">Price updated as of: {priceUpdatedAt}</small>
         </div>
       )}
     </div>
