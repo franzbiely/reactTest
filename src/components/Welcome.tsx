@@ -1,5 +1,6 @@
 "use client"
-import React, { useState } from 'react'
+import type React from 'react'
+import { useEffect, useState } from 'react'
 
 interface StockData {
   c: number;
@@ -14,11 +15,13 @@ const Welcome: React.FC = () => {
   const [symbol, setSymbol] = useState('')
   const [stockData, setStockData] = useState<StockData | null>(null)
   const [error, setError] = useState('')
+  const [isPolling, setIsPolling] = useState(true)
 
   const fetchStockPrice = async () => {
     setError('')
     setStockData(null)
-
+    const currentTime = new Date().toLocaleTimeString()
+    console.log(`Fetching stock price at ${currentTime}`)
     try {
       const response = await fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=crhc1f9r01qrbc71v4cgcrhc1f9r01qrbc71v4d0`)
       if (!response.ok) {
@@ -28,11 +31,27 @@ const Welcome: React.FC = () => {
       if (data.c === 0) {
         throw new Error('Invalid stock symbol')
       }
-      setStockData(data)
+      setStockData({ ...data, fetchTime: currentTime })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     }
   }
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout | null = null
+
+    if (isPolling) {
+      fetchStockPrice() // Fetch immediately
+      intervalId = setInterval(fetchStockPrice, 1000)
+    }
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId)
+      }
+    }
+  }, [isPolling])
 
   return (
     <div className="text-center">
